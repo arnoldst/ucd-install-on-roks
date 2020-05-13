@@ -1,0 +1,24 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app.kubernetes.io/component: srv
+    app.kubernetes.io/instance: myucdrelease
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ibm-ucd-prod
+    helm.sh/chart: ibm-ucd-prod
+    release: myucdrelease
+  name: ucd
+  namespace: ucd
+spec:
+  host: ucd-ucd.devopscluster-a46879f12c1cb86f3d9b4dd6da9a1bec-0000.eu-gb.containers.appdomain.cloud
+  port:
+    targetPort: https
+  tls:
+    insecureEdgeTerminationPolicy: None
+    termination: passthrough
+  to:
+    kind: Service
+    name: myucdrelease-ibm-ucd-prod
+    weight: 100
+  wildcardPolicy: None
