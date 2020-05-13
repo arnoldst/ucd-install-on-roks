@@ -1,5 +1,5 @@
 # Instructions to install Urbancode Deploy(UCD) on IBM's Redhat Openshift Kubernetes Service (ROKS)
-To get started you're going to need an openshift cluster running in the IBM cloud, and a client with kubectl, and oc installed.
+To get started you're going to need an openshift cluster running in the IBM cloud, and a client with oc installed.  Clone this repo as it has a number of yaml files that you can just run.
 
 The first step is to create a project, and set the service account up to be able to run UCD.
 
