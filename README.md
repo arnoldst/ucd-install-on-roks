@@ -11,7 +11,7 @@ There are 6 environment variables that you can set to control the installation (
 - UCD_RELEASE_NAME - this is the name of the helm release for ucd, and is also used as the basis of the route to the ucd server.
 - UCDAGENT_RELEASE_NAME - this is the name of the helm release for the ucd agents.
 
-Once you've set the environemnt variables you want to change, then you can just simply type
+Once you've set the environment variables you want to change, then you can just simply type
 
 ```
 ./install.sh
