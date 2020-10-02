@@ -62,7 +62,7 @@ We're now ready to install the UCD server.  Review the values in myvalues.yaml b
 
 ```
 helm repo add entitled https://raw.githubusercontent.com/IBM/charts/master/repo/entitled
-helm install myucdrelease --values myvalues.yaml entitled/ibm-ucd-prod
+helm install myucdrelease --values myvalues.yaml ibm-helm/ibm-ucd-prod/
 ```
 
 Once the pods are up and running, we need to create a route to the ucd server. Edit the ucroute.yaml, and update the route with the url of your ocp server.  Then run the following.
@@ -76,7 +76,7 @@ Check you can access the ucd UI by copying the route url into a browser.
 Assuming thats all ok - we just need to do the final step.  Now you need to add an agent.
 
 ```
-helm install my-ucda-release --values ucdagentvalues.yaml entitled/ibm-ucda-prod
+helm install my-ucda-release --values ucdagentvalues.yaml ibm-helm/ibm-ucda-prod
 ```
 
 And thats it all completed.
