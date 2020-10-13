@@ -61,8 +61,8 @@ oc create -f mysqldriverConfigMap.yaml
 We're now ready to install the UCD server.  Review the values in myvalues.yaml before installing.  We're going to add the helm repo, and then install.
 
 ```
-helm repo add entitled https://raw.githubusercontent.com/IBM/charts/master/repo/entitled
-helm install myucdrelease --values myvalues.yaml ibm-helm/ibm-ucd-prod/
+helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm
+helm install myucdrelease --values myvalues.yaml ibm-helm/ibm-ucd-prod
 ```
 
 Once the pods are up and running, we need to create a route to the ucd server. Edit the ucroute.yaml, and update the route with the url of your ocp server.  Then run the following.
