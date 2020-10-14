@@ -21,9 +21,9 @@ if [ -z "${NAMESPACE}" ]; then NAMESPACE='ucd';  fi
 if [ -z "${MYSQL_PASSWORD}" ]; then MYSQL_PASSWORD='pleasechangeme123';  fi
 if [ -z "${UCD_ADMIN_PASSWORD}" ]; then UCD_ADMIN_PASSWORD='admin'; fi
 if [ -z "${UCD_RELEASE_NAME}" ]; then UCD_RELEASE_NAME='ucd710';  fi
-if [ -z "${UCDAGENT_RELEASE_NAME}" ]; then UCDAGENT_RELEASE_NAME='ucdagent705';  fi
+if [ -z "${UCDAGENT_RELEASE_NAME}" ]; then UCDAGENT_RELEASE_NAME='ucdagent710';  fi
 if [ -z "${UCD_KEYSTORE_PASSWORD}" ]; then UCD_KEYSTORE_PASSWORD='pleasechangeme123';  fi
-if [ -z "${STORAGE_CLASS}" ]; then STORAGE_CLASS='ibmc-file-gold-gid';  fi
+if [ -z "${STORAGE_CLASS}" ]; then STORAGE_CLASS='ibmc-vpc-block-10iops-tier';  fi
 
 if [ -z "${ENTITLED_REGISTRY_KEY}" ]; then 
   echo "You must set the environment variable ENTITLED_REGISTRY_KEY to the key of your entitled registry";
@@ -37,7 +37,7 @@ echo "INFO 1/7: creating the project"
 oc get project ${NAMESPACE}
 if [ $? -eq 1 ]; then
   oc new-project ${NAMESPACE};
-  oc adm policy add-scc-to-group anyuid system:serviceaccounts:${NAMESPACE};
+  oc adm policy add-scc-to-group ibm-restricted-scc system:serviceaccounts:${NAMESPACE};
 else
   echo "ERROR:  Namespace ${NAMESPACE} already exists.  Please delete the namespace or try a different name.";
   exit 1
@@ -87,7 +87,18 @@ echo "SUCCESS 4/7: Configured secrets and config maps"
 echo "INFO 5/7: Installing UCD Server"
 helm repo add ibm-helm https://raw.githubusercontent.com/IBM/charts/master/repo/ibm-helm/
 #sed -i '' 's/ibmc-file-gold-gid/${STORAGE_CLASS}/' myvalues.yaml
-helm install ${UCD_RELEASE_NAME} --values myvalues.yaml ibm-helm/ibm-ucd-prod
+#helm install ${UCD_RELEASE_NAME} --values myvalues.yaml ibm-helm/ibm-ucd-prod
+oc apply -f ./ucd-pvc.yaml
+PVCStatus=`oc get pvc appdata-pvc -o=jsonpath="{@.status.phase}"`
+while [ $PVCStatus != "Bound" ]
+do
+  echo "INFO: Waiting for PVC to bind"
+  sleep 10
+  PVCStatus=`oc get pvc appdata-pvc -o=jsonpath="{@.status.phase}"`
+done
+echo "INFO: PVC is bound."
+helm template ${UCD_RELEASE_NAME} ibm-helm/ibm-ucd-prod -a security.openshift.io/v0 --values myvalues-vpc.yaml > ucdk8s.yaml
+oc apply -f ./ucdk8s.yaml
 UCD_POD_NAME=`oc get pods | grep ${UCD_RELEASE_NAME} | cut -d " " -f 1`
 UCD_POD_STATUS=`oc get pod | grep ${UCD_POD_NAME} | awk '{print $3}'`
 while [ $UCD_POD_STATUS != "Running" ]
@@ -104,10 +115,11 @@ echo "SUCCESS 6/7: Installing Route"
 
 echo "INFO 7/7: Installing Agent"
 oc create secret generic ${UCDAGENT_RELEASE_NAME}-secrets --from-literal=keystorepassword=${UCD_KEYSTORE_PASSWORD}
-sed -i '' 's/ucd705-ibm-ucd-prod/${UCD_RELEASE_NAME}-ibm-ucd-prod/' ucdagentvalues.yaml
+#sed -i '' 's/ucd705-ibm-ucd-prod/${UCD_RELEASE_NAME}-ibm-ucd-prod/' ucdagentvalues.yaml
 #sed -i '' 's/ibmc-file-gold-gid/${STORAGE_CLASS}/' ucdagentvalues.yaml
-
-helm install ${UCDAGENT_RELEASE_NAME} --values ucdagentvalues.yaml ibm-helm/ibm-ucda-prod
+helm template ${UCDAGENT_RELEASE_NAME} --values ucdagentvalues-vpc.yaml ibm-helm/ibm-ucda-prod -a security.openshift.io/v0 > ucdak8s.yaml
+oc apply -f ucdak8s.yaml
+#helm install ${UCDAGENT_RELEASE_NAME} --values ucdagentvalues-vpc.yaml ibm-helm/ibm-ucda-prod
 UCDAGENT_POD_NAME=`oc get pods | grep ${UCDAGENT_RELEASE_NAME} | cut -d " " -f 1`
 UCDAGENT_POD_STATUS=`oc get pod | grep ${UCDAGENT_POD_NAME} | awk '{print $3}'`
 while [ $UCDAGENT_POD_STATUS != "Running" ]

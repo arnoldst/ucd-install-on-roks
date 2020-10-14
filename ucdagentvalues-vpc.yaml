@@ -19,9 +19,9 @@ persistence:
 confVolume:
   name: "conf"
   existingClaimName: ""
-  storageClassName: "ibmc-block-gold"
+  storageClassName: "ibmc-vpc-block-10iops-tier"
   size: "20Gi"
-
+  accessMode: "ReadWriteOnce"
 
 # UCD Agent Relay URI 
 # random:(http://relay1:20080,http://relay2:20080)

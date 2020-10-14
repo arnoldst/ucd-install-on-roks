@@ -1,0 +1,25 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: ext-lib-pvc
+   annotations:
+     volume.beta.kubernetes.io/storage_class: ibmc-vpc-block-10iops-tier
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 10Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: appdata-pvc
+   annotations:
+     volume.beta.kubernetes.io/storage_class: ibmc-vpc-block-10iops-tier
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 20Gi

@@ -32,23 +32,23 @@ ucdLicense:
 
 persistence:
   enabled: true
-  useDynamicProvisioning: true
+  useDynamicProvisioning: false
   fsGroup: 1001
 
 extLibVolume:
   name: "ext-lib"
-  existingClaimName: ""
+  existingClaimName: "ext-lib-pvc"
   configMapName: "user-script"
-  storageClassName: "ibmc-block-gold"
+  storageClassName: "ibmc-vpc-block-10iops-tier"
   size: "10Gi"
-  
+  accessMode: "ReadWriteOnce"
 
 appDataVolume:
   name: "appdata"
-  existingClaimName: ""
-  storageClassName: "ibmc-block-gold"
+  existingClaimName: "appdata-pvc"
+  storageClassName: "ibmc-vpc-block-10iops-tier"
   size: "20Gi"
-  
+  accessMode: "ReadWriteOnce"
 
 ingress:
   host: ""

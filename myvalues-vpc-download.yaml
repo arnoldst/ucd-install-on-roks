@@ -6,49 +6,49 @@ image:
   repository: cp.icr.io/ibm-ucds
   tag: "7.1.0.3.1069281"
   pullPolicy: Always
-  secret: "entitledregistry-secret"
+  secret: ""
 
 service:
-  type: NodePort
+  type: ClusterIP
 
 database:
-  type: "mysql"
-  name: "ibm_ucd"
-  hostname: "mysql"
-  username: "ibm_ucd"
-  port: "3306"
-  jdbcConnUrl: "jdbc:mysql://mysql:3306/ibm_ucd"
+  type: ""
+  name: ""
+  hostname: ""
+  username: ""
+  port: ""
+  jdbcConnUrl: ""
 
 secureConnections:
   required: true
 
 secret:
-  name: "ucd-secrets"
+  name: ""
 
 ucdLicense:
   serverUrl: ""
 # Change license to true to indicate have read and agree to license agreements : http://ibm.biz/ucd-license
-  accept: true
+  accept: false
 
 persistence:
   enabled: true
-  useDynamicProvisioning: true
+  useDynamicProvisioning: false
   fsGroup: 1001
 
 extLibVolume:
   name: "ext-lib"
   existingClaimName: ""
-  configMapName: "user-script"
-  storageClassName: "ibmc-block-gold"
-  size: "10Gi"
-  
+  configMapName: ""
+  storageClassName: ""
+  size: ""
+  accessMode: "ReadWriteOnce"
 
 appDataVolume:
   name: "appdata"
   existingClaimName: ""
-  storageClassName: "ibmc-block-gold"
-  size: "20Gi"
-  
+  storageClassName: ""
+  size: ""
+  accessMode: "ReadWriteOnce"
 
 ingress:
   host: ""
